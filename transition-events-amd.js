@@ -15,9 +15,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-;(function($) {
-    "use strict";
+define(['jquery'],function($){
+    //"use strict";
 
     // Common methods and properties for jQuery Transition Events plugin.
     // Mostly for internal usage, but maybe helpful for some hack stuff:
@@ -208,5 +207,4 @@
         }
 
     });
-
-}).call(this, jQuery);
+});

@@ -1,0 +1,8 @@
+{
+	"name":"jQuery Transition Events Plugin",
+	"version":"0.2.1",
+	"dependencies": {
+		"jquery":null,
+		"requirejs":null
+	}
+}
