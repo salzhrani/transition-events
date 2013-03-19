@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-define(['jquery'],function($){
+ define(['jquery'],function($){
     //"use strict";
 
     // Common methods and properties for jQuery Transition Events plugin.
@@ -74,9 +74,9 @@ define(['jquery'],function($){
         // by native function after first call.
         animFrame: function (callback) {
             var raf = window.requestAnimationFrame       ||
-                      window.webkitRequestAnimationFrame ||
-                      window.mozRequestAnimationFrame    ||
-                      window.msRequestAnimationFrame;
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            window.msRequestAnimationFrame;
             if ( raf ) {
                 this.animFrame = function (callback) {
                     return raf.call(window, callback);
@@ -121,57 +121,57 @@ define(['jquery'],function($){
         //
         // This method doesn’t check, that transition is really finished (it can
         // be canceled in the middle).
-        afterTransition: function (durationPart, callback) {
-            if ( typeof(callback) == 'undefined' ) {
-                callback     = durationPart;
-                durationPart = 1;
-            }
+afterTransition: function (durationPart, callback) {
+    if ( typeof(callback) == 'undefined' ) {
+        callback     = durationPart;
+        durationPart = 1;
+    }
 
-            if ( !$.Transitions.isSupported() ) {
-                for (var i = 0; i < this.length; i++) {
-                    callback.call(this[i], {
+    if ( !$.Transitions.isSupported() ) {
+        for (var i = 0; i < this.length; i++) {
+            callback.call(this[i], {
+                type:          'aftertransition',
+                elapsedTime:   0,
+                propertyName:  '',
+                currentTarget: this[i]
+            });
+        }
+        return this;
+    }
+
+    for (var i = 0; i < this.length; i++) {
+        var el = $(this[i]);
+        var props     = el.css('transition-property').split(/,\s*/);
+        var durations = el.css('transition-duration');
+        var delays    = el.css('transition-delay');
+
+        durations = $.Transitions._parseTimes(durations);
+        delays    = $.Transitions._parseTimes(delays);
+
+        var prop, duration, delay, after, elapsed;
+        for (var j = 0; j < props.length; j++) {
+            prop     = props[j];
+            duration = durations[ durations.length == 1 ? 0 : j ];
+            delay    = delays[ delays.length == 1 ? 0 : j ];
+            after    = delay + (duration * durationPart);
+            elapsed  = duration * durationPart / 1000;
+
+            (function (el, prop, after, elapsed) {
+              setTimeout(function () {
+                  $.Transitions.animFrame(function () {
+                    callback.call(el[0], {
                         type:          'aftertransition',
-                        elapsedTime:   0,
-                        propertyName:  '',
-                        currentTarget: this[i]
+                        elapsedTime:   elapsed,
+                        propertyName:  prop,
+                        currentTarget: el[0]
                     });
-                }
-                return this;
-            }
-
-            for (var i = 0; i < this.length; i++) {
-                var el = $(this[i]);
-                var props     = el.css('transition-property').split(/,\s*/);
-                var durations = el.css('transition-duration');
-                var delays    = el.css('transition-delay');
-
-                durations = $.Transitions._parseTimes(durations);
-                delays    = $.Transitions._parseTimes(delays);
-
-                var prop, duration, delay, after, elapsed;
-                for (var j = 0; j < props.length; j++) {
-                    prop     = props[j];
-                    duration = durations[ durations.length == 1 ? 0 : j ];
-                    delay    = delays[ delays.length == 1 ? 0 : j ];
-                    after    = delay + (duration * durationPart);
-                    elapsed  = duration * durationPart / 1000;
-
-                    (function (el, prop, after, elapsed) {
-                      setTimeout(function () {
-                          $.Transitions.animFrame(function () {
-                            callback.call(el[0], {
-                                type:          'aftertransition',
-                                elapsedTime:   elapsed,
-                                propertyName:  prop,
-                                currentTarget: el[0]
-                            });
-                          });
-                      }, after);
-                    })(el, prop, after, elapsed);
-                }
-            }
-            return this;
-        },
+                });
+              }, after);
+          })(el, prop, after, elapsed);
+      }
+  }
+  return this;
+},
 
         // Set `callback` to listen every CSS Transition finish.
         // It will call `callback` on every finished transition,
@@ -198,13 +198,26 @@ define(['jquery'],function($){
         //
         // If transition will be canceled before finish, event willn’t be fired.
         transitionEnd: function (callback) {
+            var listener = function (e) {
+                    if(e.target === this)
+                    {
+                        callback.call(e.target, e);
+                        //e.target.removeEventListener($.Transitions.getEvent(),listener );
+                    }
+              };
             for (var i = 0; i < this.length; i++) {
-              this[i].addEventListener($.Transitions.getEvent(), function (e) {
-                  callback.call(this, e);
-              });
-            }
-            return this;
-        }
+              this[i].addEventListener($.Transitions.getEvent(),listener );
+              jQuery(this).data('evListner',listener);
+          }
+          return this;
+      },
+      transitionOff: function () {
+            var listener = jQuery(this).data('evListner');
+            for (var i = 0; i < this.length; i++) {
+              this[i].removeEventListener($.Transitions.getEvent(),listener );
+          }
+          return this;
+      }
 
-    });
+  });
 });
