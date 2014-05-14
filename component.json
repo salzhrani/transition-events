@@ -1,8 +1,28 @@
 {
-	"name":"jQuery Transition Events Plugin",
-	"version":"0.2.1",
-	"dependencies": {
-		"jquery":null,
-		"requirejs":null
-	}
+  "name": "jQuery Transition Events Plugin",
+  "version": "0.2.1",
+  "dependencies": {
+    "jquery": null,
+    "requirejs": null
+  },
+  "homepage": "https://github.com/salzhrani/transition-events",
+  "authors": [
+    "ndrey@sitnik.ru"
+  ],
+  "main": "transition-events-amd.js",
+  "keywords": [
+    "jquery",
+    "transition",
+    "events",
+    "prefix",
+    "prefixed"
+  ],
+  "license": "GPL",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
 }
